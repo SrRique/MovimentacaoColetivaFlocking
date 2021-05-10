@@ -21,17 +21,31 @@ public class Flock : MonoBehaviour
     {
         //limita o espaço de nado dos peixes
         Bounds b = new Bounds(myManager.transform.position, myManager.swinLimits * 2);
+
+        //raycast usado nos peixes
+        RaycastHit hit = new RaycastHit();
+
+        //direção para os peixes
+        Vector3 direction = myManager.transform.position - transform.position;
+
         if (!b.Contains(transform.position))
         {
             turning = true;
+            direction = myManager.transform.position - transform.position;
+        }
+        else if (Physics.Raycast(transform.position, this.transform.forward * 50, out hit))//usa o raycast para não acontecer a colisão com o pilar
+        {
+            turning = true;
+            direction = Vector3.Reflect(this.transform.forward, hit.normal);
         }
         else
             turning = false;
+
         if (turning)
         {
             //faz a rotação
-            Vector3 direction = myManager.transform.position - transform.position;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), myManager.rotationSpeed * Time.deltaTime);
+
         }
         else
         {
